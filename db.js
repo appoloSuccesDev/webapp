@@ -1,10 +1,13 @@
 var mysql = require('mysql');
+const dotenv = require('dotenv')
+
+dotenv.config({ path: './.env' })
 
 let db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'appolo'
+  host: process.env.host,
+  user: process.env.user,
+  password: process.env.password,
+  database: process.env.database
 });
 db.connect((err) => {
     if (!err) {
