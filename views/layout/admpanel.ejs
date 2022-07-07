@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/fonts.css">
     <title>ადმინ პანელი </title>
+    <style>
+     
+    </style>
     
 </head>
 <body class="ninomk" onload="startTime()">
@@ -38,7 +41,7 @@
                     <ul class="dropdown-menu text-center" aria-labelledby="navbarDropdown">
                       <li><a href="#" class="dropdown-item btn btn-primary" data-bs-toggle="modal" data-bs-target="#addblogs">ბლოგების დამატება</a></li>
                       <li><hr class="dropdown-divider"></li>
-                      <li><a href="#" class="dropdown-item btn btn-primary" data-bs-toggle="modal" data-bs-target="#addfilter">ჟანრის დამატება</a></li>
+                      <li><a class="dropdown-item btn btn-primary"  href="/adminlogin/filter" target="__blank">ჟანრის დამატება</a></li>
                       <li><hr class="dropdown-divider"></li>
                       <li><a class="dropdown-item" href="/adminlogin/medias" target="__blank" >მედია ფაილები</a></li>
                     </ul>
@@ -113,34 +116,6 @@
 <!-- ----- -->
 
 
-<div class="modal fade" id="addfilter" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">ჟანრის დამატება</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form action="/addfilte" method="post">
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">ჟანრის დამატება</span>
-            <input type="text" class="form-control" id="addfilter" name="addfilter" required aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-          </div>
-          
-          <div class="col-auto">
-            <button type="submit" class="btn btn-primary mb-3">დამატება</button>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- modal of media files -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 <script src="js/app.js"></script>

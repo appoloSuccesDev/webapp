@@ -112,7 +112,7 @@ app.get("/blogs", (req, res) => {
                         if (!error) {
                             results.forEach(rev => {
                                 revs += `
-                                    <div class="getcenter dnone" id="read">
+                                    <div class="getcenter" id="read">
                                         <div class="revs">
                                             <div class="revimgs">
                                                 <div class="backbtn"> 
@@ -128,7 +128,7 @@ app.get("/blogs", (req, res) => {
                                                     </h5>
                                                     <p class="revs-text">${rev.blogtxt} </p>
                                                 </div>
-                                                
+                                               
                                             </div>
                                         </div>
                                         
@@ -331,7 +331,7 @@ app.post('/adminlogin',(req, res) => {
                     
                     
                     
-    				res.render('./layout/admpanel', {blogcount:blogcounter,blogs:blogname,fulldate: fulldate,blogalert: " ", layout: './layout/admpanel'});
+    				res.render('./layout/admpanel', {filters: "",blogcount:blogcounter,blogs:blogname,fulldate: fulldate,blogalert: " ", layout: './layout/admpanel'});
                 
                     app.get(`/adminlogin/delete-${deleted}/:id`, (req, res) => {
 
@@ -484,7 +484,7 @@ app.post('/adminlogin',(req, res) => {
                                     x = b.insertSqldate = '' 
                                     
                                 });
-                                res.render('./layout/admpanel', {blogcount: blogcounter,blogs:blognames,fulldate: fulldate,blogalert: blogadd, layout: './layout/admpanel'});
+                                res.render('./layout/admpanel', {filters: "",blogcount: blogcounter,blogs:blognames,fulldate: fulldate,blogalert: blogadd, layout: './layout/admpanel'});
                                 
                                   
                             });
@@ -492,7 +492,7 @@ app.post('/adminlogin',(req, res) => {
             
                         } else {
                             console.log("ipaaa " + err)
-				            res.render('./layout/admpanel', {fulldate: fulldate,blogalert: blognot, layout: './layout/admpanel'});
+				            res.render('./layout/admpanel', {filters: "",fulldate: fulldate,blogalert: blognot, layout: './layout/admpanel'});
 
                         }
             
@@ -513,21 +513,93 @@ app.post('/adminlogin',(req, res) => {
 // end
 
 // add filter 
-app.post('/addfilte',urlencodedParser, (req, res) => {
-    const filter = req.body.addfilter
-    const filt = {
-        filters: filter
-    }
-    db.query(`INSERT INTO filter SET ?`, filt , (err, rows) => {
-        if(!err) {
-            console.log("filter ok added");
+app.get(`/adminlogin/filter`, (req, res) => {
+    app.post('/addfilte',urlencodedParser, (req, res) => {
+        const filter = req.body.addfilter
+        const filt = {
+            filters: filter,
+            adddate:fulldate
         }
-        else {
-            console.log("filter err " + err);
-        }
+        db.query(`INSERT INTO filter SET ?`, filt , (err, rows) => {
+            if(!err) {
+                db.query('SELECT * FROM filter', function (error, results, fields) {
+                    
+                    let filtcounter = ''
+                    let filts = ''
+                    if (error) throw error;
+                    
+                    results.forEach(f => {
+                       
+                        filtcounter = `
+                        <div class="alert alert-success" role="alert">
+                            დაემატა  : ${results.length}</h2>
+                        </div>`
+    
+                        filts += `
+                            <tr>
+                                <th scope="row">${f.id}</th>
+                                <td>${f.filters}</td>
+                                <td>${f.adddate}</td>
+                                <td>  
+                                    <a href="/adminlogin/filter/delfilt-${deleted}/${f.id}" target="_blank" class="btn btn-danger">წაშლა</a>
+                                    <a href="/adminlogin/filter/editfilt-${review}/${f.id}" target="_blank" class="btn btn-primary">რედაქტირება</a>
+                                </td>
+                                
+                            </tr>
+                        `;
+                     
+                      
+                        
+                    });
+                    res.render('./layout/filter', {filtcounter:filtcounter,filters: filts,title:"ჟანრები", layout: './layout/filter'});
+                    
+                      
+                });
+            }
+            else {
+                console.log("filter err " + err);
+            }
+        })
+        
     })
+    db.query('SELECT * FROM filter', function (error, results, fields) {
+                    
+        let filtcounter = ''            
+        let filts = ''
+        if (error) throw error;
+        
+        results.forEach(f => {
+            filtcounter = `
+            <div class="alert alert-success" role="alert">
+                საერთო ჯამში : ${results.length}</h2>
+            </div>`
+
+            filts += `
+                <tr>
+                    <th scope="row">${f.id}</th>
+                    <td>${f.filters}</td>
+                    <td>${f.adddate}</td>
+                    <td>  
+                        <a href="/adminlogin/filter/delfilt-${deleted}/${f.id}" target="_blank" class="btn btn-danger">წაშლა</a>
+                        <a href="/adminlogin/filter/editfilt-${review}/${f.id}" target="_blank" class="btn btn-primary">რედაქტირება</a>
+                    </td>
+                    
+                </tr> 
+
+             
+            `;
+        
+          
+            
+        });
+        res.render('./layout/filter', {filtcounter: filtcounter,filters: filts,title:"ჟანრები", layout: './layout/filter'});
+        
+          
+    });
+    
 
 })
+
 
 
 

@@ -15,10 +15,10 @@
     <style>
         body {
             font-family: "BPG WEB 001 Caps";
-            
+            font-size: revert;
             text-decoration: none;
         }
-        .getcenter {
+        .getcenter {  
             display: flex;
             align-items: center;
        
@@ -29,19 +29,16 @@
             width: 100%;
             color: beige;
             display: flex;
-            border-radius: 1rem;
             position: relative;
         }
         .revimgs {
             width: 50%;
             height: 100%;
-            padding: 0.5rem;
         }
         .revimgs img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 2.5%;
         }
         .revstxt {
             width: 50%;
@@ -56,18 +53,20 @@
         }
         .revs-title {
             padding: 1rem;
-            background: #212529;
+            color: #212529;
             border-radius: 5px;
             margin-bottom: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #41464b4b;
 
         }
         .revs-text {
             padding: 0.5rem;
             overflow-y: auto;
-            background: #212529;
+            background: #41464b4b;
+            color: #212529;
             max-height: 90%;
             height: 100%;
             border-radius: 5px;
@@ -94,12 +93,17 @@
             font-family: "BPG WEB 001 Caps";
 
         }
-        .ale {
-            display: flex;
+        .palette {
+            background: #ffffff;
+            color: rgb(0, 0, 0);
+            position: fixed;
+            right: 0;
+            bottom: 0;
             align-items: center;
             z-index: 2;
-            height: 100vh;
-            justify-content: center;
+            padding: 10px;
+            cursor: pointer;
+        
         }
         .dnone {
             display: none;
@@ -124,12 +128,12 @@
         }
                 /* width */
         ::-webkit-scrollbar {
-        width: 5px;
+            width: 5px;
         }
 
         /* Track */
         ::-webkit-scrollbar-track {
-        background: #f1f1f1; 
+        background: #41464b4b; 
         }
         
         /* Handle */
@@ -164,32 +168,17 @@
             .revstxt {
                 width: 100%;
             }
+            .revs-title {
+                font-size: revert;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="ale">
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 400px;">
-            <strong>პარამეტრები</strong> 
-            <hr style="width: 120px;height: 1px;background: #212529;">
-            <div class="row">
-                <div class="col">
-                    <label for="bg" class="form-label">ფონის ფერი</label>
-                    <input type="color" class="form-control form-control-color" id="bg" value="#212529" title="Choose your color">
-                </div>
-                <div class="col">
-                    <label for="fontcolor" class="form-label">წარწერების ფერი</label>
-                    <input type="color" class="form-control form-control-color" id="fontcolor" value="#fffafa" title="Choose your color">
-                </div>
-              </div>
-              <div class="sub">
-                <a type="button" class="btn btn-outline-success" onclick="blogcolors()"href="#read">გაშვება</a>
-                <span class="scrolldown" style="display: none;">ჩასქროლე<i class="fa fa-angle-down"></i></span>
-              </div>
-              <!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button> -->
-        </div>
-    </div>
-    
+    <!-- <div class="palette">
+        <i class="fa-solid fa-palette"></i>
+    </div> -->
+   
 
     <%- review %>
 
@@ -206,7 +195,6 @@
             setbg.style.background = bg
             setbg.style.color = fontcolor
 
-            document.querySelector('.dnone').style.display = 'block'
             document.querySelector('.scrolldown').style.display = 'block'
         }
     </script>
