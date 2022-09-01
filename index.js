@@ -11,12 +11,7 @@ const jsonfile = require('jsonfile');
 const db = require('./db')
 const path = require("path")
 const os = require('os')
-const Address6 = require('ip-address').Address6;
 
-const address = new Address6('2001:0:ce49:7601:e866:efff:62c3:fffe');
-const teredo = address.inspectTeredo();
-
-const info = `${teredo.client4}`
 
 dotenv.config({ path: './.env' })
 app.use(bodyParser.urlencoded({
@@ -31,6 +26,12 @@ const ftime = moment().format('LTS');
 const t = moment().format('LT');
 const d = moment().format('L');
 const fulldate = `${t} სთ , ${d} წელი`
+const indbdate = `${d}, ${ftime}`;
+
+
+function indbdates() {
+    return indbdate
+}
 
 // random generators
 
@@ -57,6 +58,7 @@ var deleted = randomsecurename() + 235
 var edit = randomsecurename() + 20
 var delmedia = randomsecurename() + 40
 var review = randomsecurename()
+var reser = randomsecurename() + 230
 // end
 
 
@@ -69,7 +71,8 @@ app.set('view engine', 'ejs')
 // routers
 
 app.get("/", (req, res) => {
-    res.render('home', { title: 'მთავარი || Appolo' })
+                              
+    res.render('home', {title: 'მთავარი || Appolo' })
 })
 app.get("/about", (req, res) => {
     res.render('about', { title: 'შესახებ || Appolo' })
@@ -159,11 +162,141 @@ app.get("/blogs", (req, res) => {
         
     })
 })
+
+
+
+// სხვა
+
+app.get("/adminlogin/resers", (req, res) => {
+    db.query('SELECT * FROM reser', function (error, results, fields) {
+        let resercount = ''
+        let resers = ''
+        if (error) throw error;
+        
+        results.forEach(r => {
+            resercount = `
+                ჯამში: ${results.length}</h2>
+            `
+         
+            
+            resers += `
+                <div class="card text-dark bg-light mb-3" style="max-width: 23rem;">
+                    <div class="card-header">${r.reser_id}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">${r.fullname}</h5>
+                        <h5 class="card-title">${r.email}</h5>
+                        <h5 class="card-title">${r.mobile}</h5>
+                        <h5 class="card-title">${r.reser_time}, ${r.reser_date}</h5>
+                        <h5 class="card-title">${r.price}</h5>
+                        <p class="card-text">
+                            <a type="button" class="btn btn-danger" href="del-${deleted}/${r.ID}">წაშლა</a>
+                            <a type="button" class="btn btn-primary" href="edit-${edit}/${r.ID}">რედაქტირება</a>
+                            
+                            <form action="/sendok" method="post">
+                                <input type="email" readonly name="okemail" placeholder="${r.email}" class="r" value="${r.email}">
+                                <button type="submit" class="btn btn-primary ">ok</button>
+                            </form>
+                            
+                            <form action="/sendnot" method="post">
+                                <input type="email" readonly placeholder="${r.email}" class="r" value="${r.email}">
+                                <button type="submit" class="btn btn-primary ">unok</button>
+                            </form>
+                            
+                        </p>
+                    </div>
+                </div>
+            ` 
+            app.post("/sendok",urlencodedParser, (req, res) =>{
+                let ok = req.body.okemail
+                
+                const transporter = nodemailer.createTransport({
+                    host: process.env.host,
+                    port: process.env.port,
+                    secure: true,
+                    auth: {
+                        user: process.env.usermail,
+                        pass: process.env.passuser,
+                    },
+                });
+                const ordersend = {
+                    attachments: [{
+                        filename: 'applosuccess.jpg',
+                        path: "public/images/mainbg.jpg",
+                        cid: 'public/images/mainbg.jpg' //same cid value as in the html img src
+                    }],
+    
+                    from: `support@appolosuccess.ge`,
+                    to: `${ok}`,
+                    subject: `ონლაინ დაჯავშნის დამოწმება`,
+                   
+                    html: ` <div style="list-style: none; background: #1d2723; color: #4c6769;padding:1rem;border-radius:5px;text-align:center"> 
+                                <h3>შენი ჯავშანი დამოწმებულია მომდევნო შეტყობინებაზე ელოდე ონლაინ შეხვედრის ბმულს </h3>
+                            </div>`,
+                }
+                let sent = ``
+                transporter.sendMail(ordersend, (res,error, info, sent) => {
+
+                    if (!error) {
+                        sent = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong>გაიგზავნა,${ok}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>`
+                       
+                    }
+                    else {
+                        
+                        sent =  `არ გაიგზავნა`
+                        
+    
+                    }
+                    return sent
+                })
+                res.render('./layout/resers', {sent:sent,st: "",reserscount: resercount,reserslist:resers,  layout: './layout/resers' });
+
+
+            })
+            app.get(`/adminlogin/del-${deleted}/${r.ID}`, (req, res) => {
+                db.query('DELETE FROM reser WHERE ID = ? ', [r.ID], function(err, rows, fields) {
+                    let st = ''
+                    if (!err) {
+                      st = `
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>წაიშალა ჯავშანი</strong> # ${req.body.params}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    }
+                    else {
+                        console.log("not deleted");
+                        
+                    }
+                    res.render('./layout/resers', {sent:" ",st: st,reserscount: resercount,reserslist:resers, layout: './layout/resers' });
+
+                })
+            })
+            
+        });
+        if (results.length == 0) {
+            resers = `<div class="blognull ninomk">
+            <div>
+                <h3>ჯავშანი არ მოიძებნება</h3>
+            </div>
+        </div>`
+        }
+        res.render('./layout/resers', {sent: "", st: "",reserscount: resercount,reserslist:resers, layout: './layout/resers' });
+        
+    })
+})
+
+
+// ენდ
+
+
+
 app.get("/contact", (req, res) => {
     res.render('contact', {emailst:"გაგზავნა", title: 'კონტაქტი || Appolo' })
 })
 app.get("/admin", (req, res) => {
-    res.render('./layout/loginadm', {ip:info, title: 'პანელი || Appolo',layout: './layout/loginadm' })
+    res.render('./layout/loginadm', {title: 'პანელი || Appolo',layout: './layout/loginadm' })
 })
 
 // upload
@@ -322,14 +455,9 @@ app.post('/adminlogin',(req, res) => {
                                 </div>`
                             }
                             res.render('./layout/mediafiles', {datacount: datacount,readfile:readf,title: 'მედია ფაილები', layout: './layout/mediafiles'});
-                            
-                            
 
                         });
                     })
-
-                    
-                    
                     
     				res.render('./layout/admpanel', {filters: "",blogcount:blogcounter,blogs:blogname,fulldate: fulldate,blogalert: " ", layout: './layout/admpanel'});
                 
@@ -344,8 +472,6 @@ app.post('/adminlogin',(req, res) => {
                         db.query('DELETE FROM blogs WHERE ID = ? ', [req.params.id], function(err, rows, fields) {
                             if (!err) {
                                 res.render('./layout/del', {title: "წაიშალა ბლოგი ",delstatus:deleted, layout: './layout/del'});
-    				            
-
                                
                             }
                             else {
@@ -357,12 +483,10 @@ app.post('/adminlogin',(req, res) => {
                     })
 
                     app.get(`/adminlogin/edit-${edit}/:id`, (req, res) => {
-
                         
                         db.query(`SELECT * FROM blogs WHERE ID = ${req.params.id}`, function (error, results, fields) {
                             
                             if (error) throw error;
-                            
                                 
                             let blognames = '';
                             let blogimgs = '';
@@ -375,15 +499,11 @@ app.post('/adminlogin',(req, res) => {
                                 blogtxt = n.blogtxt
                             })
 
-                          
-
-                            
                             res.render('./layout/editing', {title: "რედაქტირება ბლოგის ",editnum:req.params.id,blognm:blognames, blogig:blogimgs , blogft:blogfilter , blogtxt:blogtxt ,layout: './layout/editing'});
                               
                         });
                         
                     })
-                    
                     
                 })
                 app.post(`/e`,upload.array("blogimgs", 2), (req, res) => {
@@ -417,7 +537,6 @@ app.post('/adminlogin',(req, res) => {
                                                          
                         }
                     })
-                   
                     
                 })
                     
@@ -548,11 +667,8 @@ app.get(`/adminlogin/filter`, (req, res) => {
                             </tr>
                         `;
                      
-                      
-                        
                     });
                     res.render('./layout/filter', {filtcounter:filtcounter,filters: filts,title:"ჟანრები", layout: './layout/filter'});
-                    
                       
                 });
             }
@@ -585,26 +701,117 @@ app.get(`/adminlogin/filter`, (req, res) => {
                     </td>
                     
                 </tr> 
-
              
             `;
-        
-          
             
         });
-        res.render('./layout/filter', {filtcounter: filtcounter,filters: filts,title:"ჟანრები", layout: './layout/filter'});
-        
+        res.render('./layout/filter', {filtcounter: filtcounter,filters: filts,title:"ჟანრები", layout: './layout/filter'}); 
           
     });
     
-
 })
-
-
-
 
 // end
 
+// reservation meets
+
+app.post('/reser',urlencodedParser, (req, res) => {
+    let reserID = req.body.reser_id
+    let fullname = req.body.fullname
+    let email = req.body.email
+    let mobile = req.body.mobile
+    let price = req.body.price
+    let reserdate = req.body.reserdate
+    let reserdate1 = req.body.reserdate1
+
+    let reserdb = {
+        reser_id: reserID,
+        fullname: fullname,
+        email: email,
+        mobile: mobile,
+        reser_time: reserdate,
+        reser_date: reserdate1,
+        price: price,
+        order_date: timedates()
+    }
+    db.query(`INSERT INTO reser SET ?`, reserdb , (err, rows) => {
+
+        if (!err) {
+            
+            db.query(`SELECT * FROM reser WHERE reser_id = ${reserID}`, (err, rows) => {
+                let reser = ''
+                rows.forEach(resers => {
+                    reser = `
+                    <ul> 
+                        <li style="color:green">ID: ${resers.reser_id} </li>
+                        <li>სახელი და გვარი: ${resers.fullname} </li>
+                        <li>მეილი: ${resers.email} </li>
+                        <li>მობილურის ნომერი: ${resers.mobile} </li>
+                        <li>თარიღი: ${resers.reser_date}, ${resers.reser_time} </li>
+                        <li>ფასი: ${resers.price} </li>
+                        <li>დაჯავშნის დრო: ${resers.order_date} </li>
+                        <li><%- sentemail -> </li>
+                    </ul>`
+                })
+                res.render('./layout/editstatus', {title: "დაჯავშნის სტატუსი", editstatus: `დაიჯავშნა წარმატებით ${reser}`, layout: './layout/editstatus'});
+
+            })
+
+                        
+            const transporter = nodemailer.createTransport({
+                host: process.env.host,
+                port: process.env.port,
+                secure: true,
+                auth: {
+                user: process.env.usermail,
+                pass: process.env.passuser,
+                },
+            });
+            const ordersend = {
+                attachments: [{
+                    filename: 'applosuccess.jpg',
+                    path: "public/images/mainbg.jpg",
+                    cid: 'public/images/mainbg.jpg' //same cid value as in the html img src
+                }],
+
+                from: `support@appolosuccess.ge`,
+                to: `${email}`,
+                subject: `ონლაინ დაჯავშნა`,
+                text: `დამჯავშნელი: ${fulldate}`,
+                html: ` <div style="list-style: none; background: #1d2723; color: #4c6769;padding:1rem;border-radius:1rem"> 
+                            <h3>ძვირფასო, ${fullname} შენ წარმატებით დაჯავშნე აპპოლო წარმატების სივრცის ონლაინ დაჯავშნა სხვა ინსტრუქციას მეილზე ან ნომერზე ელოდე არანაკლებ 72 საათის მანძილზე</h3>
+                            <p style="color:#f19333">ID: ${reserID} </p>
+                            <p>სახელი და გვარი: ${fullname} </p>
+                            <p>დამჯავშნელის მეილი: ${email} </p>
+                            <p>მობილურის ნომერი: ${mobile} </p>
+                            <p>თარიღი: ${reserdate}, ${reserdate1} </p>
+                            <p>ფასი: ${price} </p>
+                        </div>`,
+            }
+
+            transporter.sendMail(ordersend, (error, info) => {
+                if (!error) {
+                    console.log("order sent to email")
+                }
+                else {
+                    
+                    console.log("order not sent to email")
+                    
+
+                }
+            })
+
+        }
+        else {
+            res.render('./layout/editstatus', {title: "დაჯავშნა არ მოხერხდა", editstatus: `დაიჯავშნა არ მოხერხდა`, layout: './layout/editstatus'});
+            
+            
+        }
+
+    })
+})
+
+// end
 // send mail
 
 app.post('/contact',urlencodedParser, (req, res) => {
@@ -648,9 +855,8 @@ app.post('/contact',urlencodedParser, (req, res) => {
     })
 })
 
-
 const hostname = "127.0.0.9";
-const port = 3000;
+const port = 3001;
 app.listen(port, hostname, function () {
     console.log(`Server running at http://${hostname}:${port}/`);
     console.log(`On time: ${ftime}`);
