@@ -167,6 +167,104 @@ app.get("/blogs", (req, res) => {
 
 // სხვა
 
+// price
+app.get("/adminlogin/prices", (req, res) => {
+    
+    // fs.readFile('./public/jsons/price.json', (err, data) => {
+
+    //     let getpricecont = ''
+    //     let subbtn = `  <div class="col-auto">
+    //                         <button type="submit" class="btn btn-primary mb-3">დადასტურება</button>
+    //                     </div>
+    //                     `
+    //     data.forEach(pp => {
+            
+
+    //         getpricecont += `<div class="mb-3">
+    //             <label for="colFormLabel" class="col-form-label">${pp.name}</label>
+    //             <div class="col-sm-10">
+                    
+    //             <input type="number" style="display:none" name="numsettings" class="form-control" id="colFormLabel" placeholder="${pp.nameID}" value="${pp.nameID}">
+    //             <input type="number" name="${pp.namesimbol}" class="form-control" id="colFormLabel" placeholder="${pp.price}" value="${pp.price}">
+                    
+    //             </div>
+    //         </div>`
+
+            
+
+    //     })
+
+    // })
+        res.render('./layout/price', {pricecont:"",subbtn:"",title: "ფასები",layout: './layout/price' });
+
+    app.post('/editprice', (req, res) => {
+        let lj = req.body.pricelj
+        let lc = req.body.pricecarer
+        let ll = req.body.pricelookj
+        let lt = req.body.pricetalk
+        let lv = req.body.pricecv
+        let lr = req.body.pricelearn
+        
+        const price = {
+            "prices": {
+                "lj": {
+                  "price": lj,
+                  "name": "„საყვარელი საქმის“ განსაზღვრა",
+                  "data": "11/09/2022, 14:17:20"
+                },
+                "lc": {
+                  "price": lc,
+                  "name": "კარიერის დაგეგმვა",
+                  "data": "11/09/2022, 14:17:20"
+                },
+                "ll": {
+                  "price": ll,
+                  "name": "სასურველი სამუშაოს მოძიება",
+                  "data": "11/09/2022, 14:17:20"
+                },
+                "lt": {
+                  "price": lt,
+                  "name": "გასაუბრებისთვის მომზადება",
+                  "data": "11/09/2022, 14:17:20"
+                },
+                "lv": {
+                  "price": lv,
+                  "name": "CV და თანმხლები წერილის შედგენა",
+                  "data": "11/09/2022, 14:17:20"
+                },
+                "lr": {
+                  "price": lr,
+                  "name": "სწავლის სტრატეგიის, ტაქტიკის შემუშავება",
+                  "data": "11/09/2022, 14:17:20"
+                }
+              }
+            }
+           const data = JSON.stringify(price, undefined, 2)
+           
+           fs.writeFile("./public/jsons/price.json", data, (err)  => {
+                if(err){
+                    
+                    res.render('./layout/price', {pricecont:"",subbtn:"",title: "unok",layout: './layout/price' });
+
+                    
+                } else {
+                    res.render('./layout/price', {pricecont:"",subbtn:"",title: "ok",layout: './layout/price' });
+                    
+                }
+            })
+        
+    
+      
+        
+    })
+    
+
+})
+
+
+// end
+
+
 app.get("/adminlogin/resers", (req, res) => {
     db.query('SELECT * FROM reser', function (error, results, fields) {
         let resercount = ''
@@ -198,7 +296,8 @@ app.get("/adminlogin/resers", (req, res) => {
                             </form>
                             
                             <form action="/sendnot" method="post">
-                                <input type="email" readonly placeholder="${r.email}" class="r" value="${r.email}">
+                                <input type="email" readonly name="notemail" placeholder="${r.email}" class="r" value="${r.email}">
+                                <input type="text" readonly name="mobile" placeholder="${r.mobile}" class="r" value="${r.mobile}">
                                 <button type="submit" class="btn btn-primary ">unok</button>
                             </form>
                             
@@ -255,6 +354,59 @@ app.get("/adminlogin/resers", (req, res) => {
 
 
             })
+            // submit not by Davit
+            app.post("/sendnot",urlencodedParser, (req, res) =>{
+                let notemail = req.body.notemail
+                let mobile = req.body.mobile
+                
+                const transporter = nodemailer.createTransport({
+                    host: process.env.host,
+                    port: process.env.port,
+                    secure: true,
+                    auth: {
+                        user: process.env.usermail,
+                        pass: process.env.passuser,
+                    },
+                });
+                const ordersend = {
+                    attachments: [{
+                        filename: 'applosuccess.jpg',
+                        path: "public/images/mainbg.jpg",
+                        cid: 'public/images/mainbg.jpg' //same cid value as in the html img src
+                    }],
+    
+                    from: `support@appolosuccess.ge`,
+                    to: `${notemail}`,
+                    subject: `ონლაინ დაჯავშნის დამოწმება`,
+                   
+                    html: ` <div style="list-style: none; background: #1d2723; color: #4c6769;padding:1rem;border-radius:5px;text-align:center"> 
+                                <h3>არ დადასტურდა ჯავშანი, 72 საათის განმავლობაში ელოდე ზარს რათა მოხდეს ველბარული გასაუბრება </h3>
+                                <h4>დაგიკავშირდებით ნომერზე: +995 ${mobile}</h4>
+                            </div>`,
+                }
+                let sent = ``
+                transporter.sendMail(ordersend, (res,error, info, sent) => {
+
+                    if (!error) {
+                        sent = `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong>გაიგზავნა,${ok}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>`
+                       
+                    }
+                    else {
+                        
+                        sent =  `არ გაიგზავნა`
+                        
+    
+                    }
+                    return sent
+                })
+                res.render('./layout/resers', {sent:sent,st: "",reserscount: resercount,reserslist:resers,  layout: './layout/resers' });
+
+
+            })
+
             app.get(`/adminlogin/del-${deleted}/${r.ID}`, (req, res) => {
                 db.query('DELETE FROM reser WHERE ID = ? ', [r.ID], function(err, rows, fields) {
                     let st = ''
@@ -858,6 +1010,6 @@ app.post('/contact',urlencodedParser, (req, res) => {
 const hostname = "127.0.0.9";
 const port = 3001;
 app.listen(port, hostname, function () {
-    console.log(`Server running at http://${hostname}:${port}/`);
-    console.log(`On time: ${ftime}`);
+    console.log(`Server running at http://${hostname}:${port}/`)
+    console.log(`On time: ${ftime}`)
 })

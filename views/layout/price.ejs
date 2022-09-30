@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/fonts.css">
+  <title>ფასები || ადმინ პანელი </title>
+  <style>
+    header {
+        background: rgba(49, 49, 49, 0.363);
+        color: rgb(0, 0, 0);
+        padding: 12px;
+        text-align: center;
+        font-family: "BPG Web 002";
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+    section {
+      
+        width: 450px;
+        margin: 0 auto;
+        padding: 5px;
+        font-family: "BPG Web 002";
+
+    }
+    
+    
+  </style>
+</head>
+<body>
+    <header>
+        <h2>ფასები</h2>
+        <h4>ბოლო განახლება</h4>
+    </header>
+    <section>
+        <form action="/editprice" method="post">
+            <div class="row">
+                <%- pricecont %>
+            </div>
+            
+            <%- subbtn %>
+        </form>
+    </section>
+    <div class="getvalut"></div>
+    <script>
+
+
+let price = new XMLHttpRequest();
+price.open('GET', 'https://appolosuccess.ge/json/price.json', true);
+
+price.send();
+
+price.onload = () => {
+    if(price.status === 200) {
+        let data = price.responseText;
+        let pricedata = JSON.parse(data);
+        displayJSONData(pricedata);
+        console.log("ok")
+    }
+    else {
+        console.log("err")
+    }
+};
+
+
+
+
+
+
+let displayJSONData = (pricedata) => {
+  
+  usd = '23'
+  let list_valut = '222222';
+  for(let valut of pricedata) {
+      list_valut += `
+          <h4>${valut.prices.lj.name}</h4>`;
+     
+  }
+  document.querySelector('.getvalut').innerHTML = list_valut
+  console.log(usd)
+};
+
+
+    </script>
+</body>
+</html>

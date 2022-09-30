@@ -635,7 +635,7 @@ a:hover, a:active, a:focus {
 }
 
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -643,7 +643,9 @@ a:hover, a:active, a:focus {
 }
  
 ::-webkit-scrollbar-thumb {
-  background: #888; 
+  background: rgb(80, 80, 80); 
+  border-radius: 15px;
+
 }
 
 ::-webkit-scrollbar-thumb:hover {
