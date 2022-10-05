@@ -195,7 +195,7 @@ app.get("/adminlogin/prices", (req, res) => {
     //     })
 
     // })
-        res.render('./layout/price', {pricecont:"",subbtn:"",title: "ფასები",layout: './layout/price' });
+        res.render('./layout/price', {title: "ფასები",layout: './layout/price' });
 
     app.post('/editprice', (req, res) => {
         let lj = req.body.pricelj
@@ -204,51 +204,54 @@ app.get("/adminlogin/prices", (req, res) => {
         let lt = req.body.pricetalk
         let lv = req.body.pricecv
         let lr = req.body.pricelearn
-        
-        const price = {
-            "prices": {
-                "lj": {
-                  "price": lj,
-                  "name": "„საყვარელი საქმის“ განსაზღვრა",
-                  "data": "11/09/2022, 14:17:20"
-                },
-                "lc": {
-                  "price": lc,
-                  "name": "კარიერის დაგეგმვა",
-                  "data": "11/09/2022, 14:17:20"
-                },
-                "ll": {
-                  "price": ll,
-                  "name": "სასურველი სამუშაოს მოძიება",
-                  "data": "11/09/2022, 14:17:20"
-                },
-                "lt": {
-                  "price": lt,
-                  "name": "გასაუბრებისთვის მომზადება",
-                  "data": "11/09/2022, 14:17:20"
-                },
-                "lv": {
-                  "price": lv,
-                  "name": "CV და თანმხლები წერილის შედგენა",
-                  "data": "11/09/2022, 14:17:20"
-                },
-                "lr": {
-                  "price": lr,
-                  "name": "სწავლის სტრატეგიის, ტაქტიკის შემუშავება",
-                  "data": "11/09/2022, 14:17:20"
+        let firstmeet = req.body.firstmeet
+
+        const price = [ 
+                {
+                    "prices": {
+                        "firstmeet": {
+                            "price": firstmeet,
+                            "name": "საწყისი კონსულტაცია / საჭიროებების დადგენა "
+
+                        },
+                        "lj": {
+                            "price": lj,
+                            "name": "„საყვარელი საქმის“ განსაზღვრა",
+                        },
+                        "lc": {
+                            "name": "კარიერის დაგეგმვა",
+                            "price": lc,
+                        },
+                        "ll": {
+                            "price": ll,
+                            "name": "სასურველი სამუშაოს მოძიება",
+                        },
+                        "lt": {
+                            "price": lt,
+                            "name": "გასაუბრებისთვის მომზადება",
+                        },
+                        "lv": {
+                            "price": lv,
+                            "name": "CV და თანმხლები წერილის შედგენა",
+                        },
+                        "lr": {
+                            "price": lr,
+                            "name": "სწავლის სტრატეგიის, ტაქტიკის შემუშავება",
+                        }
+                    },
+                    "lastedit": indbdates()
                 }
-              }
-            }
+            ]
            const data = JSON.stringify(price, undefined, 2)
            
            fs.writeFile("./public/jsons/price.json", data, (err)  => {
                 if(err){
                     
-                    res.render('./layout/price', {pricecont:"",subbtn:"",title: "unok",layout: './layout/price' });
+                    res.render('./layout/price', {title: "unok",layout: './layout/price' });
 
                     
                 } else {
-                    res.render('./layout/price', {pricecont:"",subbtn:"",title: "ok",layout: './layout/price' });
+                    res.render('./layout/price', {title: "ok",layout: './layout/price' });
                     
                 }
             })

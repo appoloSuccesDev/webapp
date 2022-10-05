@@ -926,11 +926,10 @@ footer .footer-copyright {
   margin: 1rem auto;
 }
 .reser select {
-  width: 230px;
-    border-radius: 5px;
-    padding: 1rem;
-    border: 1px solid #cbcbcb;
-    color: #555;
+  border-radius: 5px;
+  padding: 1rem;
+  border: 1px solid #cbcbcb;
+  color: #555;
 }
 
 .reserv_content h3 {

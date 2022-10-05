@@ -40,24 +40,88 @@
 </head>
 <body>
     <header>
-        <h2>ფასები</h2>
+        <h4>ფასები</h2>
         <h4>ბოლო განახლება</h4>
+        <h3 class="lastedited"></h3>
+
     </header>
     <section>
         <form action="/editprice" method="post">
             <div class="row">
-                <%- pricecont %>
+                <div class="mb-3">
+                    <label for="colFormLabel" class="col-form-label">საწყისი კონსულტაცია</label>
+                    <div class="col-sm-10">
+                            
+                        <input type="number" name="firstmeet" class="form-control p0" id="colFormLabel" >
+                                    
+                   </div>
+                </div>
+                <div class="mb-3">
+                    <label for="colFormLabel" class="col-form-label">„საყვარელი საქმის“ განსაზღვრა</label>
+                    <div class="col-sm-10">
+                            
+                        <input type="number" name="pricelj" class="form-control p1" id="colFormLabel" >
+                                    
+                   </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="colFormLabel" class="col-form-label">კარიერის დაგეგმვა</label>
+                    <div class="col-sm-10">
+                            
+                        <input type="number" name="pricecarer" class="form-control p2" id="colFormLabel" >
+                                    
+                   </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="colFormLabel" class="col-form-label">სასურველი სამუშაოს მოძიება</label>
+                    <div class="col-sm-10">
+                            
+                        <input type="number" name="pricelookj" class="form-control p3" id="colFormLabel">
+                                    
+                   </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="colFormLabel" class="col-form-label">გასაუბრებისთვის მომზადება</label>
+                    <div class="col-sm-10">
+                            
+                        <input type="text" name="pricetalk" class="form-control p4" id="colFormLabel">
+                                    
+                   </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="colFormLabel" class="col-form-label">CV და თანმხლები წერილის შედგენა</label>
+                    <div class="col-sm-10">
+                            
+                        <input type="number" name="pricecv" class="form-control p5" id="colFormLabel">
+                                    
+                   </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="colFormLabel" class="col-form-label">სწავლის სტრატეგიის, ტაქტიკის შემუშავება</label>
+                    <div class="col-sm-10">
+                            
+                        <input type="number" name="pricelearn" class="form-control p6" id="colFormLabel">
+                                    
+                   </div>
+                </div>
             </div>
             
-            <%- subbtn %>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-3">დადასტურება</button>
+            </div>
         </form>
     </section>
     <div class="getvalut"></div>
     <script>
 
-
+// https://appolosuccess.ge/json/price.json
 let price = new XMLHttpRequest();
-price.open('GET', 'https://appolosuccess.ge/json/price.json', true);
+price.open('GET', 'http://127.0.0.1:5500/public/jsons/price.json', true);
 
 price.send();
 
@@ -79,18 +143,57 @@ price.onload = () => {
 
 
 let displayJSONData = (pricedata) => {
-  
-  usd = '23'
-  let list_valut = '222222';
-  for(let valut of pricedata) {
-      list_valut += `
-          <h4>${valut.prices.lj.name}</h4>`;
+    let fm = '';
+    let lj = '';
+    let lc = '';
+    let ll = '';
+    let lt = '';
+    let lv = '';
+    let lr = '';
+    let lastedit = ''
+  for(let prs of pricedata) {
+    lj = `${prs.prices.lj.price}`;
+    lc = `${prs.prices.lc.price}`;
+    ll = `${prs.prices.ll.price}`;
+    lt = `${prs.prices.lt.price}`;
+    lv = `${prs.prices.lv.price}`;
+    lr = `${prs.prices.lr.price}`;
+    fm = `${prs.prices.firstmeet.price}`;
+    lastedit = `${prs.lastedit}`
      
   }
-  document.querySelector('.getvalut').innerHTML = list_valut
-  console.log(usd)
-};
+  let p0 = document.querySelector('.p0')
+  p0.placeholder = `${fm}`
+  p0.value = `${fm}`
 
+  let p1 = document.querySelector('.p1')
+  p1.placeholder = `${lj}`
+  p1.value = `${lj}`
+
+  let p2 = document.querySelector('.p2')
+  p2.placeholder = `${lc}`
+  p2.value = `${lc}`
+  
+  let p3 = document.querySelector('.p3')
+  p3.placeholder = `${ll}`
+  p3.value = `${ll}`
+
+  let p4 = document.querySelector('.p4')
+  p4.placeholder = `${lt}`
+  p4.value = `${lt}`
+
+  let p5 = document.querySelector('.p5')
+  p5.placeholder = `${lv}`
+  p5.value = `${lv}`
+
+  let p6 = document.querySelector('.p6')
+  p6.placeholder = `${lr}`
+  p6.value = `${lr}`
+
+  document.querySelector('.lastedited').innerHTML = lastedit
+ 
+};
+    
 
     </script>
 </body>

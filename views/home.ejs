@@ -712,9 +712,13 @@
                          <div class="reser">
                               <select class="tmethods" onchange="sel()">
                                    <option value="x">მიზანი</option>
-                                   <option value="talk">გასაუბრება</option>
-                                   <option value="cv">CV - ის გაკეთება</option>
-                                   <option value="carer">კარიერული რჩევა</option>
+                                   <option value="firstmeets">საწყისი კონსულტაცია / საჭიროებების დადგენა</option>
+                                   <option value="lc">„საყვარელი საქმის“ განსაზღვრა</option>
+                                   <option value="cv">კარიერის დაგეგმვა</option>
+                                   <option value="ll">სასურველი სამუშაოს მოძიება</option>
+                                   <option value="lt">გასაუბრებისთვის მომზადება</option>
+                                   <option value="lv">CV და თანმხლები წერილის შედგენა</option>
+                                   <option value="lr">სწავლის სტრატეგიის, ტაქტიკის შემუშავება</option>
                               </select>
                          </div>
                          <div class="reser" id="bt" style="display: none;">
@@ -732,36 +736,114 @@
 
 // reservetion kode generator
 
+
+
+
+
 function dspl() {
     document.querySelector('#bt').style.display = "block"     
 }
 function sel() {
-     let tm = document.querySelector(".tmethods")
-     
-     if (tm.value == "talk") {
-         
-          txt = `უფასო / free`
-          dspl()
-     }
-     else if (tm.value == "cv") {
-          txt = `ფასი / price 50 ₾`
-          dspl()
-     }
-    
-     else if (tm.value == "carer") {
 
-          txt = `ფასი 100 ₾`
-          dspl()
+     // price api
+
+
+     let price = new XMLHttpRequest();
+     price.open('GET', 'http://127.0.0.1:5500/public/jsons/price.json', true);
+
+     price.send();
+
+     price.onload = () => {
+     if(price.status === 200) {
+          let data = price.responseText;
+          let pricedata = JSON.parse(data);
+          displayJSONData(pricedata);
+          console.log("ok")
      }
-    
      else {
-          document.querySelector("#bt").style.display = "none"
-          txt = `შენ არ გაქვს არც ერთი ფუნქტი არჩეული`
-
-
+          console.log("err")
      }
-     document.querySelector("#price").value = txt
-     document.querySelector("#fr").style.display = "block"
+     };
+
+     let displayJSONData = (pricedata) => {
+          let fm = '';
+          let lj = '';
+          let lc = '';
+          let ll = '';
+          let lt = '';
+          let lv = '';
+          let lr = '';
+          let lastedit = ''
+          for(let prs of pricedata) {
+               lj = `${prs.prices.lj.price}`;
+               lc = `${prs.prices.lc.price}`;
+               ll = `${prs.prices.ll.price}`;
+               lt = `${prs.prices.lt.price}`;
+               lv = `${prs.prices.lv.price}`;
+               lr = `${prs.prices.lr.price}`;
+               fm = `${prs.prices.firstmeet.price}`;
+
+               lastedit = `${prs.lastedit}`
+                    
+          }
+     
+          let tm = document.querySelector(".tmethods")
+          
+          if (tm.value == "lj") {
+          
+               txt = lj
+               dspl()
+          }
+          if (tm.value == "firstmeets") {
+               
+               txt = fm
+               dspl()
+          }
+          else if (tm.value == "lc") {
+               txt = lc
+               dspl()
+          }
+     
+          else if (tm.value == "ll") {
+
+               txt = ll
+               dspl()
+          }
+
+          else if (tm.value == "lt") {
+
+               txt = lt
+               dspl()
+          }
+
+          else if (tm.value == "lv") {
+
+               txt = lv
+               dspl()
+          }
+     
+          else if (tm.value == "lr") {
+
+               txt = lr
+               dspl()
+          }
+
+          else {
+               document.querySelector("#bt").style.display = "none"
+               txt = `შენ არ გაქვს არც ერთი ფუნქტი არჩეული`
+
+
+          }
+          document.querySelector("#price").value = `${txt} ₾` 
+          document.querySelector("#fr").style.display = "block"
+
+     
+     };
+    
+
+     // end
+
+     
 }
 
 function gen() {
